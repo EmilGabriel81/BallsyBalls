@@ -11,9 +11,9 @@ public class GameMainFrame extends JFrame {
 	}
 
 	private void init() {
+		// init main window
 		add(new GameMainPanel());
 		pack();
-	
 		setTitle("Crazy Balls");
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setLocationRelativeTo(null);
