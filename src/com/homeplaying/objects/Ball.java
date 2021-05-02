@@ -40,6 +40,10 @@ public class Ball {
 	public Color getColor() {
 		return color;
 	}
+	
+	public void setColor(Color color) {
+		this.color = color;
+	}
 
 	public int getSize() {
 		return size;

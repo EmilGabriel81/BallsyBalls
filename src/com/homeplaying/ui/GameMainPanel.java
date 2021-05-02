@@ -29,26 +29,28 @@ public class GameMainPanel extends JPanel {
 	private List<Ball> balls;
 	private Random r;
 	private Color color;
-	private boolean gameOn;
-	
+	private boolean onPlay;
+	private boolean onGame;
+
 	private Rectangle rRight;
 	private Rectangle rLeft;
 	private Rectangle rUp;
 	private Rectangle rDown;
-	
+
 	private Rectangle genericRect;
-	
+
 //	private int dirX = 5;
 //	private int dirY = 3;
 //	private int directionX = 1;
 //	private int directionY = 1;
 
 	public GameMainPanel() {
-		gameOn = true;
+		onPlay = true;
+		onGame = true;
 		initBalls();
 		initVar();
 		initLayout();
-		//checkCollision();
+		// checkCollision();
 	}
 
 	private void initLayout() {
@@ -58,7 +60,7 @@ public class GameMainPanel extends JPanel {
 	}
 
 	private void initVar() {
-		
+
 		addKeyListener(new GameEventListener(this));
 		this.timer = new Timer(4, new GameMainLoop(this));
 		timer.start();
@@ -69,27 +71,26 @@ public class GameMainPanel extends JPanel {
 	protected void paintComponent(Graphics g) {
 
 		super.paintComponent(g);
-		// System.out.println("Repainting");
 		drawBackGround(g);
-			drawBoard(g);
-			//drawSides(g);
-			drawRectSides(g);
+		drawBoard(g);
+		drawRectSides(g);
+		
+		// System.out.println("Repainting");
 	}
-	
-	
+
 	private void drawRectSides(Graphics g) {
 		g.setColor(Color.BLUE);
-		if(rLeft!= null) {
-			g.fillRect((int)rLeft.getX() ,(int)rLeft.getY() ,(int)rLeft.getWidth() ,(int) rLeft.getHeight());				
+		if (rLeft != null) {
+			g.fillRect((int) rLeft.getX(), (int) rLeft.getY(), (int) rLeft.getWidth(), (int) rLeft.getHeight());
 		}
-		if(rRight != null) {
-			g.fillRect((int)rRight.getX() ,(int)rRight.getY() ,(int)rRight.getWidth() ,(int) rRight.getHeight());
+		if (rRight != null) {
+			g.fillRect((int) rRight.getX(), (int) rRight.getY(), (int) rRight.getWidth(), (int) rRight.getHeight());
 		}
-		if(rUp != null) {
-			g.fillRect((int)rUp.getX() ,(int)rUp.getY() ,(int)rUp.getWidth() ,(int) rUp.getHeight());	
+		if (rUp != null) {
+			g.fillRect((int) rUp.getX(), (int) rUp.getY(), (int) rUp.getWidth(), (int) rUp.getHeight());
 		}
-		if(rDown != null) {
-			g.fillRect((int)rDown.getX() ,(int)rDown.getY() ,(int)rDown.getWidth() ,(int)rDown.getHeight());
+		if (rDown != null) {
+			g.fillRect((int) rDown.getX(), (int) rDown.getY(), (int) rDown.getWidth(), (int) rDown.getHeight());
 		}
 	}
 
@@ -97,73 +98,78 @@ public class GameMainPanel extends JPanel {
 		// System.out.println("drawBackground called");
 		g.setColor(Color.YELLOW);
 		g.fillRect(0, 0, 912, 762);
+		if(!onGame) {
+			g.setFont(new Font("Arial", Font.BOLD, 30));
+			g.setColor(Color.BLUE);
+			g.drawString("Game Over ", 380, 300);
+		}
 
 	}
 
 	private void drawBoard(Graphics g) {
-		if(!gameOn) {
+		if (!onPlay) {
 			g.setFont(new Font("Arial", Font.BOLD, 30));
 			g.setColor(Color.BLUE);
-			g.drawString("Pause", 30, 30);
+			g.drawString("Pause ||", 30, 30);
+			g.drawString("Balls in the game: " + balls.size(), 500, 30);
 		}
-			drawRandomBalls(g);		
+		drawRandomBalls(g);
 	}
-	
-	
 
 	private void checkSides() {
-		
+
 		int pointY;
 		int pointX;
 		int ballSize;
-		
-		for(Ball b : balls) {
-			if(b.getX() <= 0) {
+
+		for (Ball b : balls) {
+			if (b.getX() <= 0) {
 				pointY = b.getY();
 				ballSize = b.getSize();
-				rLeft = new Rectangle(0,pointY, 10, ballSize);	
-				
-			}if(b.getX()+b.getSize() >= PANELWIDHT) {
-				pointY = b.getY();
-				ballSize = b.getSize();
-				rRight = new Rectangle(PANELWIDHT-10, pointY, 10, ballSize);
-				
+				rLeft = new Rectangle(0, pointY, 10, ballSize);
+
 			}
-			if(b.getY() <= 0) {
+			if (b.getX() + b.getSize() >= PANELWIDHT) {
+				pointY = b.getY();
+				ballSize = b.getSize();
+				rRight = new Rectangle(PANELWIDHT - 10, pointY, 10, ballSize);
+
+			}
+			if (b.getY() <= 0) {
 				pointX = b.getX();
 				ballSize = b.getSize();
 				rUp = new Rectangle(pointX, 0, ballSize, 10);
-				
-			}if(b.getY()+b.getSize() >= PANELHEIGHT) {
+
+			}
+			if (b.getY() + b.getSize() >= PANELHEIGHT) {
 				pointX = b.getX();
 				ballSize = b.getSize();
-				rDown = new Rectangle(pointX, PANELHEIGHT -10, ballSize, 10);
-				
+				rDown = new Rectangle(pointX, PANELHEIGHT - 10, ballSize, 10);
+
 			}
 		}
-		
+
 	}
 
 	private void drawRandomBalls(Graphics g) {
 
 		for (Ball rBall : this.balls) {
-			g.setColor((rBall.getColor()));
-			g.fillOval(rBall.getX(), rBall.getY(), rBall.getSize(), rBall.getSize());
-			//g.setColor(color.BLUE);
-			//g.drawRect(rBall.getX(),rBall.getY(),rBall.getSize(),rBall.getSize());
+			if (rBall.isAllive()) {
+				g.setColor((rBall.getColor()));
+				g.fillOval(rBall.getX(), rBall.getY(), rBall.getSize(), rBall.getSize());
+			}
 		}
 
 	}
 
-	
-
 	public void render() {
-		// On single method for updates
-			if(gameOn) {
+		// A single method for updates
+		if(onGame) {
+			if (onPlay) {
 				update();
 			}
 			repaint();	
-		
+		}
 	}
 
 	private void update() {
@@ -171,78 +177,89 @@ public class GameMainPanel extends JPanel {
 		checkCollision();
 		moveBalls();
 		checkSides();
-		
+
 	}
 
 	private void checkCollision() {
-//		for(int i = 0; i < balls.size();i++ ) {
-//			Iterator<Ball>ballsIterator = balls.iterator();
-//				while(ballsIterator.hasNext()) {
-//					theBall = (Ball) ballsIterator.next();
-//				}
-//				theBall = (Ball) balls.get(i);
-//				if(theBall.getBounds().intersects(myBall.getBounds())) {
-//					myBall.setReverseX(theBall.getReverseX()*-1);
-//					myBall.setReverseY(theBall.getReverseY()*-1);
-//					//System.out.println("Intersection");
-//				}
-//		}
-		
-		for(int i = 0; i < balls.size();i++ ) {
-			for(int j = i + 1; j < balls.size();j++ ) {
-				if(balls.get(i).getBounds().intersects(balls.get(j).getBounds())) {
+		for (int i = 0; i < balls.size(); i++) {
+			for (int j = i + 1; j < balls.size(); j++) {
+				if (collide(balls.get(i), balls.get(j))) {
+					//Swap the direction between them
 					int tempX = balls.get(i).getReverseX();
 					int tempY = balls.get(i).getReverseY();
-
+					//ball i gets the coordinates from ball j
 					balls.get(i).setReverseX(balls.get(j).getReverseX());
 					balls.get(i).setReverseY(balls.get(j).getReverseY());
-
+					//ball j gets the coordinates from ball i
 					balls.get(j).setReverseX(tempX);
 					balls.get(j).setReverseY(tempY);
-					
+					//We increase the counter on the balls
+					balls.get(i).setCount(balls.get(i).getCount()+1);
+					balls.get(j).setCount(balls.get(j).getCount()+1);
+					//ball i gets the color of ball j
+					Color c = balls.get(i).getColor();
+					balls.get(i).setColor(balls.get(j).getColor());
+					//ball j gets the color of ball i
+					balls.get(j).setColor(c);
+
 					/**
-					 *      -------- Almost the same result ----
+					 *        -------- Almost the same result ----
 					 * 
-					balls.get(i).setReverseX(balls.get(i).getReverseX()*-1);
-					balls.get(i).setReverseY(balls.get(i).getReverseY()*-1);
-					
-					balls.get(j).setReverseX(balls.get(j).getReverseX()*-1);
-					balls.get(j).setReverseY(balls.get(j).getReverseY()*-1);
-					
-					System.out.println("Collision");
+					 * balls.get(i).setReverseX(balls.get(i).getReverseX()*-1);
+					 * balls.get(i).setReverseY(balls.get(i).getReverseY()*-1);
+					 * 
+					 * balls.get(j).setReverseX(balls.get(j).getReverseX()*-1);
+					 * balls.get(j).setReverseY(balls.get(j).getReverseY()*-1);
+					 * 
+					 * System.out.println("Collision");
 					 * 
 					 */
-			
+
+				}
+
 			}
-				
-		    }
-		
+
 		}
-		
+		if(checkVisibility() == 1) onGame = false;
+		for(Ball ballz: balls) {
+			if(ballz.getCount() > 10) {
+				ballz.setAllive(false);
+			}
+		}
 	}
 	
-//	public boolean collide(Rectangle a, Rectangle b) {
-//		if(a.intersects(b)) {
-//			return true;
-//		}
-//		return false;
-//	}
+	private int checkVisibility() {
+		int arraySize = balls.size();
+		int ballsCounted = 0;
+		for (int i = 0; i < balls.size(); i++) {
+			if (balls.get(i).getCount() > 10) {
+				ballsCounted ++;
+			}
+		}
+		return arraySize - ballsCounted;
+	}
 
+	public boolean collide(Ball a, Ball b) {
+		if(a.isAllive() && b.isAllive()) {
+			Rectangle rectA = a.getBounds();
+			Rectangle rectB = b.getBounds();
+			if (rectA.intersects(rectB)) {
+				return true;
+			}
+		}
+		return false;
+	}
 
 	private void moveBalls() {
 		for (Ball rBall : this.balls) {
 			rBall.moveBall();
-//			rBall.moveX(directionX);
-//			rBall.moveY(directionY);
-			
 		}
 	}
-	
 
 	private void initBalls() {
 		r = new Random();
 		balls = new ArrayList<Ball>();
-		int randomBallls = r.nextInt(19) + 1;
+		int randomBallls = r.nextInt(18) + 2;
 		for (int i = 0; i < randomBallls; i++) {
 			// Random position on the panel
 			int randX = r.nextInt(PANELWIDHT - 21) + 1;
@@ -257,35 +274,35 @@ public class GameMainPanel extends JPanel {
 			int green = r.nextInt(254) + 1;
 			int blue = r.nextInt(254) + 1;
 			color = new Color(red, green, blue);
-			//if (i % 2 == 0) {
-				this.balls.add(new Ball(randX, randY, randDirectX, randDirectY, randSize, color));
-			//}else {this.balls.add(new Ball(randX, randY, randDirectX, randDirectY, randSize, color));}
+			// if (i % 2 == 0) {
+			this.balls.add(new Ball(randX, randY, randDirectX, randDirectY, randSize, color));
+			// }else {this.balls.add(new Ball(randX, randY, randDirectX, randDirectY,
+			// randSize, color));}
 		}
 		for (Ball defaultBall : this.balls) {
 			System.out.println(defaultBall.toString());
 		}
-		System.out.println("Random number was: "+randomBallls+", number of balls: " + balls.size());
+		System.out.println("Random number was: " + randomBallls + ", number of balls: " + balls.size());
 	}
-	
-	
-	
+
+	private boolean isPlaying() {
+		return onPlay;
+	}
+
 	// Key Adapters.................
 
 	public void KeyPressed(KeyEvent e) {
 		if (e.getKeyCode() == KeyEvent.VK_SPACE) {
-			if(isPlaying()) {
-				gameOn = false;
-			}else {gameOn = true;}
+			if (isPlaying()) {
+				onPlay = false;
+			} else {
+				onPlay = true;
+			}
 		}
 	}
 
-	private boolean isPlaying() {
-		return gameOn;	
-	}
-
 	public void KeyReleased(KeyEvent e) {
-		//System.out.println("Key Released : " + e.getKeyCode());
-
+		// System.out.println("Key Released : " + e.getKeyCode());
 	}
 
 }
